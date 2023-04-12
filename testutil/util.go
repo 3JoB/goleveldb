@@ -13,7 +13,8 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/onsi/ginkgo/v2/config"
+	"github.com/onsi/ginkgo/v2"
+
 	"github.com/3JoB/goleveldb/comparer"
 )
 
@@ -66,7 +67,8 @@ func RandomSeed() int64 {
 	if !flag.Parsed() {
 		panic("random seed not initialized")
 	}
-	return config.GinkgoConfig.RandomSeed
+	sui, _ := ginkgo.GinkgoConfiguration()
+	return sui.RandomSeed
 }
 
 func NewRand() *rand.Rand {

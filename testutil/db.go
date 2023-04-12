@@ -11,6 +11,7 @@ import (
 	"math/rand"
 
 	. "github.com/onsi/gomega"
+
 	"github.com/3JoB/goleveldb/errors"
 	"github.com/3JoB/goleveldb/iterator"
 	"github.com/3JoB/goleveldb/util"

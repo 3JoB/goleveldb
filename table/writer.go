@@ -13,6 +13,7 @@ import (
 	"io"
 
 	"github.com/golang/snappy"
+
 	"github.com/3JoB/goleveldb/comparer"
 	"github.com/3JoB/goleveldb/filter"
 	"github.com/3JoB/goleveldb/opt"

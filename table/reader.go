@@ -15,6 +15,7 @@ import (
 	"sync"
 
 	"github.com/golang/snappy"
+
 	"github.com/3JoB/goleveldb/cache"
 	"github.com/3JoB/goleveldb/comparer"
 	"github.com/3JoB/goleveldb/errors"

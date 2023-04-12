@@ -18,6 +18,7 @@ import (
 	"sync"
 
 	. "github.com/onsi/gomega"
+
 	"github.com/3JoB/goleveldb/storage"
 )
 

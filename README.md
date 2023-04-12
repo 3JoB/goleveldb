@@ -5,12 +5,12 @@ This is an implementation of the [LevelDB key/value database](https://github.com
 Installation
 -----------
 
-	go get github.com/syndtr/goleveldb/leveldb
+	go get github.com/3JoB/goleveldb
 
 Requirements
 -----------
 
-* Need at least `go1.14` or newer.
+* Need at least `go1.20` or newer.
 
 Usage
 -----------

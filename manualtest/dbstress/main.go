@@ -20,13 +20,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/syndtr/goleveldb/leveldb"
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/filter"
-	"github.com/syndtr/goleveldb/leveldb/opt"
-	"github.com/syndtr/goleveldb/leveldb/storage"
-	"github.com/syndtr/goleveldb/leveldb/table"
-	"github.com/syndtr/goleveldb/leveldb/util"
+	"github.com/3JoB/goleveldb"
+	"github.com/3JoB/goleveldb/errors"
+	"github.com/3JoB/goleveldb/filter"
+	"github.com/3JoB/goleveldb/opt"
+	"github.com/3JoB/goleveldb/storage"
+	"github.com/3JoB/goleveldb/table"
+	"github.com/3JoB/goleveldb/util"
 )
 
 var (
@@ -330,10 +330,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tstor := &testingStorage{stor}
+	tstor := &testingStorage{Storage: stor}
 	defer tstor.Close()
 
-	fatalf := func(err error, format string, v ...interface{}) {
+	fatalf := func(err error, format string, v ...any) {
 		atomic.StoreUint32(&fail, 1)
 		atomic.StoreUint32(&done, 1)
 		log.Printf("FATAL: "+format, v...)
@@ -389,7 +389,6 @@ func main() {
 
 	go func() {
 		for b := range writeReq {
-
 			var err error
 			if mrand.Float64() < transactionProb {
 				log.Print("> Write using transaction")

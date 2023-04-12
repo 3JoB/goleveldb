@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"github.com/syndtr/goleveldb/leveldb/storage"
+	"github.com/3JoB/goleveldb/errors"
+	"github.com/3JoB/goleveldb/storage"
 )
 
 type ErrIkeyCorrupted struct {
@@ -18,7 +18,7 @@ func (e *ErrIkeyCorrupted) Error() string {
 }
 
 func newErrIkeyCorrupted(ikey []byte, reason string) error {
-	return errors.NewErrCorrupted(storage.FileDesc{}, &ErrIkeyCorrupted{append([]byte(nil), ikey...), reason})
+	return errors.NewErrCorrupted(storage.FileDesc{}, &ErrIkeyCorrupted{Ikey: append([]byte(nil), ikey...), Reason: reason})
 }
 
 type kType int
@@ -52,6 +52,7 @@ const (
 	// used by value type, so its can packed together in single
 	// 64-bit integer.
 	kMaxSeq uint64 = (uint64(1) << 56) - 1
+
 	// Maximum value possible for packed sequence number and type.
 	kMaxNum uint64 = (kMaxSeq << 8) | uint64(ktSeek)
 )

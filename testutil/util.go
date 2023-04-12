@@ -10,9 +10,9 @@ import (
 	"bytes"
 	"flag"
 	"math/rand"
-	"reflect"
 	"sync"
 
+	"github.com/3JoB/go-reflect"
 	"github.com/onsi/ginkgo/v2"
 
 	"github.com/3JoB/goleveldb/comparer"

@@ -3,6 +3,7 @@ module github.com/3JoB/goleveldb
 go 1.20
 
 require (
+	github.com/3JoB/go-reflect v1.0.1
 	github.com/golang/snappy v0.0.4
 	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.6

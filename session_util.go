@@ -435,6 +435,7 @@ func (s *session) newManifest(rec *sessionRecord, v *version) (err error) {
 			s.manifestFd = fd
 			s.manifestWriter = writer
 			s.manifest = jw
+			s.baseManifestSize = jw.Size()
 		} else {
 			writer.Close()
 			if rerr := s.stor.Remove(fd); err != nil {

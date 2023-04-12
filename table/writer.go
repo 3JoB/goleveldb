@@ -14,8 +14,8 @@ import (
 
 	"github.com/golang/snappy"
 
-	lerrs "github.com/3JoB/goleveldb/errors"
 	"github.com/3JoB/goleveldb/comparer"
+	lerrs "github.com/3JoB/goleveldb/errors"
 	"github.com/3JoB/goleveldb/filter"
 	"github.com/3JoB/goleveldb/opt"
 	"github.com/3JoB/goleveldb/util"
@@ -394,15 +394,8 @@ func (w *Writer) Close() error {
 // NewWriter creates a new initialized table writer for the file.
 //
 // Table writer is not safe for concurrent use.
-func NewWriter(f io.Writer, o *opt.Options, pool *util.BufferPool, size int) *Writer {
-	var bufBytes []byte
-	if pool == nil {
-		bufBytes = make([]byte, size)
-	} else {
-		bufBytes = pool.Get(size)
-	}
-	bufBytes = bufBytes[:0]
-
+func NewWriter(f io.Writer, o *opt.Options, pool *util.BufferPool) *Writer {
+	bufBytes := pool.Get(0)
 	w := &Writer{
 		writer:          f,
 		cmp:             o.GetComparer(),

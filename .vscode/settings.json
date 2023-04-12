@@ -6,6 +6,7 @@
         "imin",
         "itererr",
         "leveldb",
+        "rerr",
         "tcorrupted",
         "tgood"
     ]

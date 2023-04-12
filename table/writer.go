@@ -14,6 +14,7 @@ import (
 
 	"github.com/golang/snappy"
 
+	lerrs "github.com/3JoB/goleveldb/errors"
 	"github.com/3JoB/goleveldb/comparer"
 	"github.com/3JoB/goleveldb/filter"
 	"github.com/3JoB/goleveldb/opt"
@@ -254,7 +255,7 @@ func (w *Writer) finishBlock() error {
 //
 // It is safe to modify the contents of the arguments after Append returns.
 func (w *Writer) Append(key, value []byte) error {
-	if w.err != nil {
+	if lerrs.IsUnrecoverableError(w.err) {
 		return w.err
 	}
 	if w.nEntries > 0 && w.cmp.Compare(w.dataBlock.prevKey, key) >= 0 {
@@ -340,7 +341,7 @@ func (w *Writer) Close() error {
 	}
 	if buf := &w.filterBlock.buf; buf.Len() > 0 {
 		filterBH, w.err = w.writeBlock(buf, opt.NoCompression)
-		if w.err != nil {
+		if lerrs.IsUnrecoverableError(w.err) {
 			return w.err
 		}
 	}

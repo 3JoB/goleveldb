@@ -1,6 +1,12 @@
 {
     "cSpell.words": [
         "goleveldb",
-        "gomega"
+        "gomega",
+        "imax",
+        "imin",
+        "itererr",
+        "leveldb",
+        "tcorrupted",
+        "tgood"
     ]
 }

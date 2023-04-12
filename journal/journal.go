@@ -429,7 +429,7 @@ func (w *Writer) writeBlock() {
 // writePending finishes the current journal and writes the buffer to the
 // underlying writer.
 func (w *Writer) writePending() {
-	if w.err != nil {
+	if errors.IsUnrecoverableError(w.err) {
 		return
 	}
 	if w.pending {
@@ -444,7 +444,7 @@ func (w *Writer) writePending() {
 func (w *Writer) Close() error {
 	w.seq++
 	w.writePending()
-	if w.err != nil {
+	if errors.IsUnrecoverableError(w.err) {
 		return w.err
 	}
 	w.err = errors.New("leveldb/journal: closed Writer")
@@ -456,7 +456,7 @@ func (w *Writer) Close() error {
 func (w *Writer) Flush() error {
 	w.seq++
 	w.writePending()
-	if w.err != nil {
+	if errors.IsUnrecoverableError(w.err) {
 		return w.err
 	}
 	if w.f != nil {
@@ -490,7 +490,7 @@ func (w *Writer) Reset(writer io.Writer) (err error) {
 // after the next Close, Flush or Next call, and should no longer be used.
 func (w *Writer) Next() (io.Writer, error) {
 	w.seq++
-	if w.err != nil {
+	if errors.IsUnrecoverableError(w.err) {
 		return nil, w.err
 	}
 	if w.pending {
@@ -532,7 +532,7 @@ func (x singleWriter) Write(p []byte) (int, error) {
 	if w.seq != x.seq {
 		return 0, errors.New("leveldb/journal: stale writer")
 	}
-	if w.err != nil {
+	if errors.IsUnrecoverableError(w.err) {
 		return 0, w.err
 	}
 	n0 := len(p)

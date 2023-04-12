@@ -161,10 +161,10 @@ type compaction struct {
 	gp                tFiles
 	gpi               int
 	seenKey           bool
+	released          bool
 	gpOverlappedBytes int64
 	imin, imax        internalKey
 	tPtrs             []int
-	released          bool
 
 	snapGPI               int
 	snapSeenKey           bool

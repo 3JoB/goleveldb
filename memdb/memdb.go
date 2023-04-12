@@ -13,6 +13,7 @@ import (
 	"sync"
 	"unsafe"
 
+	"bytes"
 	"github.com/3JoB/goleveldb/comparer"
 	"github.com/3JoB/goleveldb/errors"
 	"github.com/3JoB/goleveldb/iterator"
@@ -176,13 +177,13 @@ func (i *dbIter) Release() {
 
 // DB is an in-memory key/value database.
 type DB struct {
-	cmp comparer.BasicComparer
-	rnd *rand.Rand
+	cmp      comparer.BasicComparer
+	rnd      *rand.Rand
+	quickCmp bool
 
-	mu       sync.RWMutex
-	kvData   []byte
-	nodeData []nodeInt
-
+	mu        sync.RWMutex
+	kvData    []byte
+	nodeData  []nodeInt
 	prevNode  [tMaxHeight]int
 	maxHeight int
 	n         int
@@ -199,25 +200,36 @@ func (p *DB) randHeight() (h int) {
 
 // Must hold RW-lock if prev == true, as it use shared prevNode slice.
 func (p *DB) findGE(key []byte, prev bool) (int, bool) {
-	node := 0
-	h := p.maxHeight - 1
-	visited := 0
+	var (
+		node = 0
+		h    = p.maxHeight - 1
+		qKey []byte
+	)
+	if p.quickCmp {
+		// If we're using quickCmp, the key we compare against needs to
+		// be padded to full 8 bytes.
+		qKey = padKey(key)
+	}
 	for {
 		next := p.nodeAt(node).nextAt(h)
 		cmp := 1
-		if next != 0 && next != visited {
+		if next != 0 {
 			o := p.nodeAt(next)
-			cmp = p.cmp.Compare(p.kvData[o.kStart():o.kEnd()], key)
+			if p.quickCmp {
+				// If the default comparer is used, can use bytes.Compare
+				if cmp = o.quickCmp(qKey); cmp == 0 {
+					// Deep compare
+					cmp = bytes.Compare(p.kvData[o.kStart():o.kEnd()], key)
+				}
+			} else {
+				// Deep compare
+				cmp = p.cmp.Compare(p.kvData[o.kStart():o.kEnd()], key)
+			}
 		}
 		if cmp < 0 {
 			// Keep searching in this list
 			node = next
 		} else {
-			if next != 0 && cmp != 0 {
-				// If we go down further, we can skip this element if we
-				// encounter it on a lower level.
-				visited = next
-			}
 			if prev {
 				p.prevNode[h] = node
 			} else if cmp == 0 {
@@ -299,12 +311,13 @@ func (p *DB) Put(key []byte, value []byte) error {
 	p.kvData = append(p.kvData, value...)
 	// Node
 	node := len(p.nodeData)
-	newN := newNode(kvOffset, len(key), len(value), h)
+	newN := newNode(kvOffset, len(value), h, key)
 	for i, n := range p.prevNode[:h] {
 		prev := p.nodeAt(n)
 		newN.setNextAt(i, prev.nextAt(i))
 		prev.setNextAt(i, node)
 	}
+	p.nodeData = append(p.nodeData, newN...)
 
 	p.kvSize += len(key) + len(value)
 	p.n++
@@ -330,7 +343,6 @@ func (p *DB) Delete(key []byte) error {
 		prev := p.nodeAt(n)
 		prev.setNextAt(i, todelete.nextAt(i))
 	}
-
 	p.kvSize -= todelete.kLen() + todelete.vLen()
 	p.n--
 	return nil
@@ -446,11 +458,12 @@ func (p *DB) Reset() {
 
 	p.nodeData = p.nodeData[:0]
 	// Add empty first element
-	zero := newNode(0, 0, 0, tMaxHeight)
+	zero := newNode(0, 0, tMaxHeight, nil)
 	for n := 0; n < tMaxHeight; n++ {
 		zero.setNextAt(n, 0)
 		p.prevNode[n] = 0
 	}
+	p.nodeData = append(p.nodeData, zero...)
 	p.mu.Unlock()
 }
 
@@ -465,12 +478,13 @@ func (p *DB) Reset() {
 func New(cmp comparer.BasicComparer, capacity int) *DB {
 	p := &DB{
 		cmp:       cmp,
+		quickCmp:  (cmp == comparer.DefaultComparer),
 		rnd:       rand.New(rand.NewSource(0xdeadbeef)),
 		maxHeight: 1,
 		kvData:    make([]byte, 0, capacity),
 	}
 	// Add empty first element
-	zero := newNode(0, 0, 0, tMaxHeight)
+	zero := newNode(0, 0, tMaxHeight, nil)
 	for n := 0; n < tMaxHeight; n++ {
 		zero.setNextAt(n, 0)
 	}

@@ -1,13 +1,33 @@
 {
     "cSpell.words": [
+        "amax",
+        "auxm",
+        "auxt",
+        "bpool",
+        "cerr",
+        "decref",
+        "Dont",
+        "errf",
         "goleveldb",
         "gomega",
+        "ikey",
         "imax",
         "imin",
         "itererr",
         "leveldb",
+        "mcomp",
+        "mpool",
+        "onsi",
+        "Ptrs",
         "rerr",
+        "shortenb",
+        "Suryandaru",
+        "tcomp",
         "tcorrupted",
-        "tgood"
+        "tgood",
+        "Triandana",
+        "ukey",
+        "xmax",
+        "xmin"
     ]
 }

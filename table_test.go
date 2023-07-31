@@ -11,7 +11,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/3JoB/go-reflect"
+	"github.com/goccy/go-reflect"
 	"github.com/onsi/gomega"
 
 	"github.com/3JoB/goleveldb/storage"

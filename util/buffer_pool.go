@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/3JoB/go-reflect"
+	"github.com/goccy/go-reflect"
 )
 
 // BufferPool is a 'buffer pool'.
